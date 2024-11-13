@@ -1,18 +1,25 @@
 local config = require("error-lens.config")
 
 local function set_highlight(buf, diagnostic, fg, bg, first)
-    vim.api.nvim_buf_add_highlight(buf, config.namespace, fg, diagnostic.lnum, 0, -1)
-    vim.api.nvim_buf_set_extmark(buf, config.namespace, diagnostic.lnum, 0, {
-        hl_mode = "combine",
-        hl_eol = true,
-        hl_group = bg,
-        virt_text = {
-            { (first and string.rep(" ", 3) or "") }, -- more spacing first time
-            { string.rep(" ", 2) .. diagnostic.message .. string.rep(" ", 2), bg },
-        },
-        priority = 4 - diagnostic.severity,
-    })
+    local line_count = vim.api.nvim_buf_line_count(buf)
+
+    -- Only proceed if the diagnostic line number is within the buffer's line count
+    if diagnostic.lnum >= 0 and diagnostic.lnum < line_count then
+        vim.api.nvim_buf_add_highlight(buf, config.namespace, fg, diagnostic.lnum, 0, -1)
+        
+        vim.api.nvim_buf_set_extmark(buf, config.namespace, diagnostic.lnum, 0, {
+            hl_mode = "combine",
+            hl_eol = true,
+            hl_group = bg,
+            virt_text = {
+                { (first and string.rep(" ", 3) or "") }, -- more spacing first time
+                { string.rep(" ", 2) .. diagnostic.message .. string.rep(" ", 2), bg },
+            },
+            priority = 4 - diagnostic.severity,
+        })
+    end
 end
+
 
 local function clear_highlights(buf)
     vim.api.nvim_buf_clear_namespace(buf, config.namespace, 0, -1)
