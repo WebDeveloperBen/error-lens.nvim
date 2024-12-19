@@ -1,6 +1,7 @@
 local config = require("error-lens.config")
 
 local function set_highlight(buf, diagnostic, fg, bg, first)
+
     vim.api.nvim_buf_add_highlight(buf, config.namespace, fg, diagnostic.lnum, 0, -1)
     vim.api.nvim_buf_set_extmark(buf, config.namespace, diagnostic.lnum, 0, {
         hl_mode = "combine",
@@ -19,6 +20,9 @@ local function clear_highlights(buf)
 end
 
 local function update_highlights(buf, diagnostics)
+  if vim.bo[buf].filetype === "neo-tree" then
+    return -- Skip neo-tree buffers
+  end
     clear_highlights(buf)
     local first = true
     local old_lnum=-1
