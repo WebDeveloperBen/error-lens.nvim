@@ -2,7 +2,7 @@ local config = require("error-lens.config")
 
 local function set_highlight(buf, diagnostic, fg, bg, first)
   -- Skip highlighting for inactive-code diagnostics
-  if diagnostic.source == "rust-analyzer" and diagnostic.message:find("inactive code") then
+  if diagnostic.message:match("code is inactive") then
     return
   end
 
